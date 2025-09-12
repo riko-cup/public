@@ -106,7 +106,7 @@ foreach ($targetFolders as $folder) {
 if ($successCount > 0) {
     echo "✅ Berhasil menyimpan ke $successCount folder:<br>\n";
     foreach ($uploadedURLs as $url) {
-        echo $url . "<br>\n";
+        echo '<a href="' . $url . '" target="_blank">' . $url . '</a><br>' . "\n";
     }
 } else {
     echo "❌ Gagal menyalin ke folder manapun.<br>\n";
