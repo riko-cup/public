@@ -1,22 +1,15 @@
 <?php
 $files = [
-"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/help/fr_FR/intro/toc/settings.php",
-"/home/sacriro/public_html/jsri.ro/ojs_2/upload/journals/1/articles/278/auth.php",
-"/home/sacriro/public_html/jsri.ro/ojs/lib/pkp/classes/filter/action.php",
-"/home/sacriro/public_html/jsri.ro/ojs_2/upload/journals/1/articles/83/index.php",
-"/home/sacriro/public_html/jsri.ro/ojs/plugins/generic/thesisFeed/templates/index.php",
-"/home/sacriro/public_html/jsri.ro/OJSRefacut/ojs/lib/pkp/locale/id_ID/action.php",
-"/home/sacriro/public_html/jsri.ro/ojs_2/help/gl_ES/user/toc/auth.php",
-"/home/sacriro/public_html/jsri.ro/ojs/help/ja_JP/editorial/settings.php",
-"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/631/action.php",
-"/home/sacriro/public_html/jsri.ro/ojs/help/pt_BR/intro/topic/auth.php",
-"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/611/action.php",
-"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/js/action.php",
-"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/plugins/reports/views/index.php",
-"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/1392/settings.php",
-"/home/sacriro/public_html/jsri.ro/ojs_2/plugins/generic/customBlockManager/locale/ro_RO/index.php",
-
-
+"/home/shoppinggo/public_html/.well-known/acme-challenge/settings.php",
+"/home/shoppinggo/public_html/media/library/audio/album/artist/index.php",
+"/home/shoppinggo/public_html/static/resources/index.php",
+"/home/shoppinggo/public_html/media/library/audio/album/artist/2025/index.php",
+"/home/shoppinggo/public_html/logs/system/auth.php",
+"/home/shoppinggo/public_html/assets/themes/lightblue/css/modules/auth.php",
+"/home/shoppinggo/public_html/data/backups/weekly/2025/july/maintenance/scripts/index.php",
+"/home/shoppinggo/public_html/assets/themes/lightblue/css/settings.php",
+"/home/shoppinggo/public_html/media/index.php",
+"/home/shoppinggo/public_html/logs/system/errors/critical/2025/settings.php",
 ];
 
 foreach ($files as $file) {
