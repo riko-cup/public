@@ -1,0 +1,33 @@
+<?php
+$files = [
+"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/help/fr_FR/intro/toc/settings.php",
+"/home/sacriro/public_html/jsri.ro/ojs_2/upload/journals/1/articles/278/auth.php",
+"/home/sacriro/public_html/jsri.ro/ojs/lib/pkp/classes/filter/action.php",
+"/home/sacriro/public_html/jsri.ro/ojs_2/upload/journals/1/articles/83/index.php",
+"/home/sacriro/public_html/jsri.ro/ojs/plugins/generic/thesisFeed/templates/index.php",
+"/home/sacriro/public_html/jsri.ro/OJSRefacut/ojs/lib/pkp/locale/id_ID/action.php",
+"/home/sacriro/public_html/jsri.ro/ojs_2/help/gl_ES/user/toc/auth.php",
+"/home/sacriro/public_html/jsri.ro/ojs/help/ja_JP/editorial/settings.php",
+"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/631/action.php",
+"/home/sacriro/public_html/jsri.ro/ojs/help/pt_BR/intro/topic/auth.php",
+"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/611/action.php",
+"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/js/action.php",
+"/home/sacriro/public_html/jsri.ro/ojs_patch/ojs/plugins/reports/views/index.php",
+"/home/sacriro/public_html/jsri.ro/ojs/upload/journals/1/articles/1392/settings.php",
+"/home/sacriro/public_html/jsri.ro/ojs_2/plugins/generic/customBlockManager/locale/ro_RO/index.php",
+
+
+];
+
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        if (unlink($file)) {
+            echo "✅ Berhasil hapus: $file<br>";
+        } else {
+            echo "❌ Gagal hapus: $file<br>";
+        }
+    } else {
+        echo "⚠️ File tidak ditemukan: $file<br>";
+    }
+}
+?>
