@@ -248,7 +248,7 @@ def periodic_check_thread():
 def manual_check_thread(domain):
     with get_webdriver() as driver:
         hasil = check_single_domain(driver, domain)
-        send_telegram_message(f"📌 Hasil cek manual:\n{hasil}")
+        send_telegram_message(f"📌 :{hasil}")
 
 # ==============================
 # MULAI SKRIP
