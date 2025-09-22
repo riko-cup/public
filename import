@@ -217,8 +217,8 @@ def periodic_check_thread():
 
             # loop rutin 10 menit sekali
             while True:
-                time.sleep(600)  # jeda 10 menit
                 send_telegram_message("⏳ JEDA 10 MENIT")
+                time.sleep(600)  # jeda 10 menit
 
                 with domain_lock:
                     if not latest_domains:
