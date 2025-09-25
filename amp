@@ -51,7 +51,7 @@
         }
         
         body {
-            background-color: #111;
+            background-color: #000000;
             background-image: url(#);
             color: #fff;
             font-family: rubik, sans-serif
@@ -60,7 +60,7 @@
         header {
             background: linear-gradient( #000001 0%, #000000 100%);
             box-shadow: 0 0 9px 2px hsl(0deg 0% 4% / 48%);
-            border-bottom: 2px solid #008cff
+            border-bottom: 2px solid #c8ff00
         }
         
         header .header-wrapper {
@@ -83,7 +83,7 @@
             right: 0;
             text-shadow: 0 1px 3px rgb(0 0 0 / 75%);
             z-index: 99;
-            border-top: 3px solid #008cff 
+            border-top: 3px solid #c8ff00 
         }
         
         .nav .menu {
@@ -263,11 +263,11 @@
         }
         
         .color-success {
-            background-color: #008cff 
+            background-color: #c8ff00 
         }
         
         .color-primary {
-            background-color: #008cff 
+            background-color: #c8ff00 
         }
         
         .color-warning {
@@ -275,7 +275,7 @@
         }
         
         .color-danger {
-            background-color: #008cff 
+            background-color: #c8ff00 
         }
         
         .box-text {
@@ -359,11 +359,11 @@
         .content table th,
         .content table td {
             padding: 8px;
-            border: 1px solid #008cff
+            border: 1px solid #c8ff00
         }
         
         .content table th {
-         background: linear-gradient( #008cff 0% , #00b4eb 100%);
+         background: linear-gradient(135deg, #c8ff00, #000000);
             text-shadow: 0 1px 3px rgb(0 0 0 / 75%)
         }
         
@@ -473,13 +473,13 @@
 
       @keyframes border-ani {
         0% {
-          border: 3px #008cff solid;
+          border: 3px #c8ff00 solid;
         }
         50% {
           border: 3px #009cda solid;
         }
         100% {
-          border: 3px #008cff  solid;
+          border: 3px #c8ff00  solid;
         }
       }
 
@@ -614,7 +614,7 @@ button {
   height: 50px;
   border-radius: 10px;
   display: block;
-  background-color: #008cff ; 
+  background-color: #c8ff00 ; 
   color: #000000;
   border: none;
   padding: 10px 20px;
@@ -642,17 +642,17 @@ button:hover {
 
     button.jumping {
     animation: bounce 1s infinite;
-    color: #008cff;
+    color: #ffffff;
     font-size: 17px;
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    background: linear-gradient(to bottom, #ffffff 0%, #ffffff 100%);
-    border: 2px solid #fffed9;
+   background: linear-gradient(135deg, #c8ff00, #000000);
+    border: 2px solid #000000;
     border-radius: 10px;
     position: relative;
     z-index: 2;
-    box-shadow: 0 0 10px #008cff;
+    box-shadow: 0 0 10px #c8ff00;
     }
 
     @keyframes bounce {
@@ -711,16 +711,17 @@ button:hover {
             <div class="btn-items">
                <a href="https://dub.sh/opaltogel"> 
                 <button class="jumping">DAFTAR AKUN OPALTOGEL</button>
+
             </a>
                 <a href="https://dub.sh/opaltogel">
                  <button style="    
-                 color: #fff;
+                 color: #ffffff;
                  font-size: 17px;
                  font-weight: bold;
                  text-decoration: none;
                  text-align: center;
-                 background: linear-gradient(to bottom, #008cff 100%, #008cff;
-                 border: 2px solid rgb(0, 119, 255);
+                 background: linear-gradient(135deg, #c8ff00, #000000);
+                 border: 2px solid #000000;
                  border-radius: 10px;
                  z-index: 2;
                  box-shadow: 0 0 10px #fff;
@@ -735,25 +736,28 @@ button:hover {
                     <th colspan="2">TENTANG OPALTOGEL</th>
                 </tr>
                 <tr>
-                    <td>Min Deposit</td>
-                    <td>Rp. 10.000,-</td>
+                    <th>SERVER</th>
+                    <td>INDONESIA</td>
                 </tr>
                 <tr>
-                    <td>Tersedia</td>
-                    <td>Togel Online, Toto Online, Live Casino</td>
+                    <th>NAMA SITUS</th>
+                    <td>Opaltogel</td>
                 </tr>
                 <tr>
-                    <td>Keamanan Situs</td>
-                     <td>Link Anti Nawala</td>
+                    <th>JENIS GAME</th>
+                    <td>BANDAR TOGEL, TOTO 4D, SITUS TOGEL</td>
                 </tr>
                 <tr>
-                    <td>Opsi Deposit</td>
-                    <td>All Bank, E-Wallet, Pulsa, QRIS</td>
+                    <th>MINIMAL DEPOSIT</th>
+                    <td>5.000 IDR</td>
                 </tr>
                 <tr>
-                    <td>Mata Uang</td>
-                    <td>IDR (Rupiah)</td>
-                </tr>
+                    <th>TRANSAKSI PEMBAYARAN</th>
+                    <td>
+                        <span class="checkmark">✔ BANK</span>
+                        <span class="checkmark">✔ E-WALLET</span>
+                        <span class="checkmark">✔ QRIS</span>
+                    </td>
             </tbody>
         </table>
     </div>
