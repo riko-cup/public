@@ -1,0 +1,26 @@
+<?php
+function findLongestDirectoryPath($startDir)
+{
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($startDir, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    $longestPath = '';
+    foreach ($iterator as $path) {
+        if (is_dir($path)) {
+            if (strlen($path) > strlen($longestPath)) {
+                $longestPath = $path;
+            }
+        }
+    }
+
+    return $longestPath;
+}
+
+// Set starting directory
+$startDir = __DIR__; // Change this to your starting directory if needed
+$longestPath = findLongestDirectoryPath($startDir);
+
+echo "Longest directory path: " . $longestPath . PHP_EOL;
+echo "Path length: " . strlen($longestPath) . PHP_EOL;
