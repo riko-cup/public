@@ -13,14 +13,16 @@ from contextlib import contextmanager
 # ==============================
 # KONFIGURASI TELEGRAM & GLOBAL VAR
 # ==============================
-BOT_TOKEN = "8298779240:AAHdgKmEnI57pCcpfxIwfDHTIKFWS0V1yoQ"
+# Ganti dengan token dan chat ID Anda
+BOT_TOKEN = "8298779240:AAHdgKmEnI57pCcpfxIwfDHTIKFWS0V1yoQ" 
 CHAT_ID = "-4964915114"
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 latest_domains = []
 latest_update_id = 0
 domain_lock = threading.Lock()
-new_list_event = threading.Event()
+# Event ini akan mengatur kapan periodic_check_thread harus bangun
+new_list_event = threading.Event() 
 
 def send_telegram_message(message):
     try:
@@ -41,113 +43,106 @@ def get_webdriver():
     options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
-    # Kalau mau lihat Chrome muncul, JANGAN tambahkan --headless
     driver = None
     try:
-        driver = webdriver.Chrome(service=Service(), options=options)
+        # Asumsikan chromedriver ada di PATH
+        driver = webdriver.Chrome(service=Service(), options=options) 
         yield driver
     finally:
         if driver:
             driver.quit()
 
 # ==============================
-# FUNGSI CEK DOMAIN MANUAL
+# CEK SATU DOMAIN (PAKAI ELEMEN DARI BATCH)
 # ==============================
 def check_single_domain(driver, domain):
     try:
-        driver.get("https://nawalacheck.skiddle.id/")
+        driver.get("https://trustpositif.komdigi.go.id/")
 
-        input_box = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, "domains"))
+        # Klik pop-up modal
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "press-to-modal"))
+        ).click()
+        time.sleep(1)
+
+        # Isi domain
+        input_area = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "input-data"))
         )
-        input_box.clear()
-        input_box.send_keys(domain)
-        input_box.send_keys(Keys.ENTER)
+        input_area.clear()
+        input_area.send_keys(domain)
 
-        check_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-        )
-        check_button.click()
+        # Klik tombol cek
+        driver.find_element(By.ID, "text-footer1").click()
+        time.sleep(5)
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#results tbody tr"))
-        )
+        # Ambil hasil
+        row = driver.find_element(By.CSS_SELECTOR, "#daftar-block tbody tr")
+        cells = row.find_elements(By.TAG_NAME, "td")
 
-        row = driver.find_element(By.CSS_SELECTOR, "#results tbody tr")
-        domain_cell = row.find_element(By.CSS_SELECTOR, "td:nth-child(1)")
-        status_span = row.find_element(By.CSS_SELECTOR, "td:nth-child(2) span")
+        if len(cells) >= 2:
+            domain_text = cells[0].text.strip()
+            status_text = cells[1].text.strip().lower()
+            status_text = status_text.replace("\n", " ").replace("\xa0", " ").strip()
 
-        domain_text = domain_cell.text.strip()
-        status_text = status_span.text.strip()
-        span_class = status_span.get_attribute("class")
-
-        if "bg-red-100" in span_class or status_text == "Blocked":
-            return f"{domain_text} 🚫 Blocked"
-        elif "bg-green-100" in span_class or status_text == "Not Blocked":
-            return f"{domain_text} ✅ Not Blocked"
+            if status_text == "ada":
+                return f"{domain_text} 🚫 Blocked"
+            elif status_text == "tidak ada":
+                return f"{domain_text} ✅ Not Blocked"
+            else:
+                return f"{domain_text} ❓ Tidak diketahui ({status_text})"
         else:
-            return f"{domain_text} ❓ Tidak diketahui ({status_text})"
+            return f"{domain} ❌ Error: format tabel tidak sesuai"
 
     except Exception as e:
-        print(f"❌ Error saat cek {domain}: {e}")
-        return f"{domain} ❌ Error saat cek"
+        return f"{domain} ❌ Error saat cek: {e}"
 
 # ==============================
-# FUNGSI CEK BANYAK DOMAIN (/list domain)
+# FUNGSI CEK BANYAK DOMAIN (BATCH 5)
 # ==============================
 def cek_via_web_scrape(domains_list):
     results = []
-    with get_webdriver() as driver:
-        try:
-            driver.get("https://nawalacheck.skiddle.id/")
+    # Gunakan satu driver untuk seluruh batch
+    with get_webdriver() as driver: 
+        for i in range(0, len(domains_list), 5):
+            batch = domains_list[i:i+5]
+            try:
+                driver.get("https://trustpositif.komdigi.go.id/")
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "press-to-modal"))
+                ).click()
+                time.sleep(1)
 
-            input_box = WebDriverWait(driver, 30).until(
-                EC.presence_of_element_located((By.ID, "domains"))
-            )
+                input_area = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "input-data"))
+                )
+                input_area.clear()
+                input_area.send_keys("\n".join(batch))
 
-            # Masukkan semua domain sekaligus ke textbox
-            all_domains = "\n".join(domains_list)
-            input_box.clear()
-            input_box.send_keys(all_domains)
-            input_box.send_keys(Keys.ENTER)
+                driver.find_element(By.ID, "text-footer1").click()
+                time.sleep(5)
 
-            check_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-            )
-            check_button.click()
+                rows = driver.find_elements(By.CSS_SELECTOR, "#daftar-block tbody tr")
+                for row in rows:
+                    cells = row.find_elements(By.TAG_NAME, "td")
+                    if len(cells) >= 2:
+                        domain_text = cells[0].text.strip()
+                        status_text = cells[1].text.strip().lower()
+                        status_text = status_text.replace("\n", " ").replace("\xa0", " ").strip()
 
-            # Tunggu semua hasil muncul
-            WebDriverWait(driver, 30).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#results tbody tr"))
-            )
-
-            rows = driver.find_elements(By.CSS_SELECTOR, "#results tbody tr")
-            for row in rows:
-                try:
-                    domain_cell = row.find_element(By.CSS_SELECTOR, "td:nth-child(1)")
-                    status_span = row.find_element(By.CSS_SELECTOR, "td:nth-child(2) span")
-
-                    domain_text = domain_cell.text.strip()
-                    status_text = status_span.text.strip()
-                    span_class = status_span.get_attribute("class")
-
-                    if "bg-red-100" in span_class or status_text == "Blocked":
-                        results.append(f"{domain_text} 🚫 Blocked")
-                    elif "bg-green-100" in span_class or status_text == "Not Blocked":
-                        results.append(f"{domain_text} ✅ Not Blocked")
-                    else:
-                        results.append(f"{domain_text} ❓ Tidak diketahui ({status_text})")
-
-                except Exception as e:
-                    results.append(f"❌ Error parsing row: {e}")
-
-        except Exception as e:
-            results.append(f"❌ Error global: {e}")
-
+                        if status_text == "ada":
+                            results.append(f"{domain_text} 🚫 Blocked")
+                        elif status_text == "tidak ada":
+                            results.append(f"{domain_text} ✅ Not Blocked")
+                        else:
+                            results.append(f"{domain_text} ❓ Tidak diketahui ({status_text})")
+            except Exception as e:
+                for d in batch:
+                    results.append(f"{d} ❌ Error batch: {e}")
     return results
 
 # ==============================
-# THREAD 1: CEK PERINTAH TELEGRAM
+# THREAD 1: CEK PERINTAH TELEGRAM (Long Polling)
 # ==============================
 def check_telegram_commands_thread():
     global latest_update_id
@@ -155,94 +150,110 @@ def check_telegram_commands_thread():
 
     while True:
         try:
-            url = f"{BASE_URL}/getUpdates?offset={latest_update_id + 1}"
+            # Menggunakan Long Polling (timeout=30) untuk respons yang lebih cepat dan stabil
+            url = f"{BASE_URL}/getUpdates?offset={latest_update_id + 1}&timeout=30" 
             res = requests.get(url).json()
 
             if "result" in res:
-                updates = sorted(res["result"], key=lambda u: u["update_id"])
+                updates = res["result"]
                 latest_list_command = None
 
                 for update in updates:
-                    latest_update_id = update["update_id"]
+                    current_update_id = update["update_id"]
+                    
                     if "message" in update and "text" in update["message"]:
                         text = update["message"]["text"].strip()
 
                         if text.lower().startswith("/list domain"):
-                            latest_list_command = text
+                            # Simpan command, akan diproses di akhir batch update
+                            latest_list_command = text 
                             send_telegram_message("✅ Bot menemukan daftar baru. Akan dicek setelah delay selesai...")
-                            new_list_event.set()
+                            # Hanya set event, pengecekan list akan dilakukan oleh periodic_check_thread
+                            new_list_event.set() 
+                            
                         elif text.lower().startswith("/cek "):
                             parts = text.split()
                             if len(parts) >= 2:
                                 domain = parts[1]
+                                send_telegram_message(f"⏳ Memulai pengecekan manual untuk: {domain}...")
                                 threading.Thread(
                                     target=manual_check_thread, args=(domain,), daemon=True
                                 ).start()
+                        
+                        # Update ID setelah memproses update
+                        if current_update_id >= latest_update_id:
+                            latest_update_id = current_update_id
 
+
+                # Proses command /list domain (jika ada)
                 if latest_list_command:
                     lines = latest_list_command.splitlines()
-                    domains_to_check = [line.strip() for line in lines[1:] if line.strip()]
+                    # Ambil domain dari baris kedua sampai akhir
+                    domains_to_check = [line.strip() for line in lines[1:] if line.strip()] 
                     with domain_lock:
                         latest_domains = domains_to_check
-
+                        
+        except requests.exceptions.Timeout:
+            # Normal jika long polling timeout
+            print("⏳ Tidak ada update baru.")
+            continue
+            
         except Exception as e:
             print(f"❌ Gagal ambil perintah Telegram: {e}")
 
-        time.sleep(5)
+        # Jeda singkat untuk menghindari flooding API jika ada banyak update cepat
+        time.sleep(1) 
 
 # ==============================
-# THREAD 2: PENGECEKAN RUTIN
+# THREAD 2: PENGECEKAN RUTIN (REVISI)
 # ==============================
 def periodic_check_thread():
     global latest_domains
+    
+    # Pesan awal dan Tunggu pemicu pertama
+    send_telegram_message("⏳ Pengecekan rutin menunggu daftar domain baru (/list domain)...")
+    
     while True:
-        new_list_event.wait()  # tunggu sampai ada daftar baru
+        # Blokir thread hingga new_list_event di-set (ketika /list domain dikirim)
+        new_list_event.wait()
+        new_list_event.clear() # Reset event agar bisa menunggu lagi
 
+        # Ambil daftar domain
         with domain_lock:
             domains_to_check = latest_domains.copy()
 
-        if domains_to_check:
-            send_telegram_message(f"✅ Bot menemukan {len(domains_to_check)} domain. Memulai pengecekan langsung...")
+        if not domains_to_check:
+            # Kasus seharusnya jarang terjadi karena event.set() dipicu bersama /list domain
+            send_telegram_message("🚫 Daftar domain saat ini kosong. Kirim /list domain lagi untuk memulai.")
+            continue # Kembali ke awal loop untuk menunggu event lagi
 
-            # cek pertama kali langsung
-            results = cek_via_web_scrape(domains_to_check)
-            found_blocked = False
-            for hasil in results:
-                if "🚫 Blocked" in hasil:
-                    send_telegram_message(hasil)
-                    time.sleep(1)
-                    send_telegram_message(hasil)
-                    time.sleep(1)
-                    send_telegram_message(hasil)
-                    found_blocked = True
+        # --- Bagian Pengecekan ---
+        send_telegram_message(f"▶️ Memulai pengecekan {len(domains_to_check)} domain...")
+        results = cek_via_web_scrape(domains_to_check)
 
-            # loop rutin 10 menit sekali
-            while True:
-                time.sleep(420) 
+        if results:
+            total = len(results)
+            aman = len([r for r in results if "✅ Not Blocked" in r])
+            blocked = len([r for r in results if "🚫 Blocked" in r])
+            error = len([r for r in results if "❌" in r])
 
-                with domain_lock:
-                    if not latest_domains:
-                        break
-                    domains_to_check = latest_domains.copy()
+            summary = (
+                f"✈️ TOTAL {total} DOMAIN ✈️\n"
+                f"✅ AMAN: {aman}\n"
+                f"🚫 BLOCKED: {blocked}\n"
+                f"🐛 ERROR: {error}"
+            )
+            send_telegram_message(summary)
 
-                results = cek_via_web_scrape(domains_to_check)
-                found_blocked = False
-                for hasil in results:
-                    if "🚫 Blocked" in hasil:
-                        send_telegram_message(hasil)
+            if blocked > 0:
+                blocked_domains = [r for r in results if "🚫 Blocked" in r]
+                for domain_result in blocked_domains:
+                    for _ in range(3):
+                        send_telegram_message(f"📌 : {domain_result}")
                         time.sleep(1)
-                        send_telegram_message(hasil)
-                        time.sleep(1)
-                        send_telegram_message(hasil)
-                        found_blocked = True
+        # --- Akhir Bagian Pengecekan ---
 
-                if not found_blocked:
-                    send_telegram_message("✅ Tidak ada yang terblokir.")
-
-        else:
-            send_telegram_message("🚫 Tidak ada daftar domain ditemukan. Kirim /list domain.")
-
-        new_list_event.clear()
+        time.sleep(400)
 
 # ==============================
 # THREAD 3: CEK MANUAL (/cek domain)
@@ -250,16 +261,26 @@ def periodic_check_thread():
 def manual_check_thread(domain):
     with get_webdriver() as driver:
         hasil = check_single_domain(driver, domain)
-        send_telegram_message(f"📌 :{hasil}")
+
+        if "🚫 Blocked" in hasil:
+            for _ in range(3):
+                send_telegram_message(f"📌 : {hasil}")
+                time.sleep(1)
+        elif "✅ Not Blocked" in hasil:
+            send_telegram_message(f"✅ Tidak terblokir: {domain}.")
+        else:
+            send_telegram_message(f"📌 : {hasil}")
 
 # ==============================
 # MULAI SKRIP
 # ==============================
 if __name__ == "__main__":
-    send_telegram_message("🤖 Bot sudah online! Silahkan kirim /list domain untuk memulai pengecekan.")
+    send_telegram_message("🤖 Bot Trustpositif sudah online! Kirim /list domain untuk memulai pengecekan.")
 
+    # Memulai 3 Thread Utama
     threading.Thread(target=check_telegram_commands_thread, daemon=True).start()
     threading.Thread(target=periodic_check_thread, daemon=True).start()
 
+    # Thread Utama (Main Thread) tetap berjalan agar daemon threads tidak mati
     while True:
         time.sleep(1)
