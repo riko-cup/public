@@ -21,7 +21,7 @@ BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 latest_domains = []
 latest_update_id = 0
 domain_lock = threading.Lock()
-# Event ini akan mengatur kapan periodic_check_thread harus bangun
+# Event ini digunakan HANYA untuk memulai siklus periodic_check_thread
 new_list_event = threading.Event() 
 
 def send_telegram_message(message):
@@ -53,7 +53,7 @@ def get_webdriver():
             driver.quit()
 
 # ==============================
-# CEK SATU DOMAIN (PAKAI ELEMEN DARI BATCH)
+# CEK SATU DOMAIN
 # ==============================
 def check_single_domain(driver, domain):
     try:
@@ -102,7 +102,6 @@ def check_single_domain(driver, domain):
 # ==============================
 def cek_via_web_scrape(domains_list):
     results = []
-    # Gunakan satu driver untuk seluruh batch
     with get_webdriver() as driver: 
         for i in range(0, len(domains_list), 5):
             batch = domains_list[i:i+5]
@@ -150,7 +149,7 @@ def check_telegram_commands_thread():
 
     while True:
         try:
-            # Menggunakan Long Polling (timeout=30) untuk respons yang lebih cepat dan stabil
+            # Long Polling (timeout=30)
             url = f"{BASE_URL}/getUpdates?offset={latest_update_id + 1}&timeout=30" 
             res = requests.get(url).json()
 
@@ -165,10 +164,10 @@ def check_telegram_commands_thread():
                         text = update["message"]["text"].strip()
 
                         if text.lower().startswith("/list domain"):
-                            # Simpan command, akan diproses di akhir batch update
+                            # Simpan command untuk diproses di akhir batch update
                             latest_list_command = text 
-                            send_telegram_message("✅ Bot menemukan daftar baru. Akan dicek setelah delay selesai...")
-                            # Hanya set event, pengecekan list akan dilakukan oleh periodic_check_thread
+                            send_telegram_message("✅ Bot menemukan daftar baru. Akan dicek di siklus berikutnya.")
+                            # Memicu thread rutin HANYA jika ia sedang menunggu
                             new_list_event.set() 
                             
                         elif text.lower().startswith("/cek "):
@@ -185,52 +184,49 @@ def check_telegram_commands_thread():
                             latest_update_id = current_update_id
 
 
-                # Proses command /list domain (jika ada)
+                # Proses command /list domain (jika ada) dan perbarui daftar global
                 if latest_list_command:
                     lines = latest_list_command.splitlines()
-                    # Ambil domain dari baris kedua sampai akhir
                     domains_to_check = [line.strip() for line in lines[1:] if line.strip()] 
                     with domain_lock:
                         latest_domains = domains_to_check
                         
         except requests.exceptions.Timeout:
-            # Normal jika long polling timeout
             print("⏳ Tidak ada update baru.")
             continue
             
         except Exception as e:
             print(f"❌ Gagal ambil perintah Telegram: {e}")
 
-        # Jeda singkat untuk menghindari flooding API jika ada banyak update cepat
+        # Jeda singkat
         time.sleep(1) 
 
 # ==============================
-# THREAD 2: PENGECEKAN RUTIN (REVISI)
+# THREAD 2: PENGECEKAN RUTIN (LOOPING)
 # ==============================
 def periodic_check_thread():
     global latest_domains
     
-    # Pesan awal dan Tunggu pemicu pertama
+    # TAHAP 1: MENUNGGU INPUT PERTAMA
     send_telegram_message("⏳ Pengecekan rutin menunggu daftar domain baru (/list domain)...")
-    
-    while True:
-        # Blokir thread hingga new_list_event di-set (ketika /list domain dikirim)
-        new_list_event.wait()
-        new_list_event.clear() # Reset event agar bisa menunggu lagi
+    new_list_event.wait() # Blokir sampai /list domain pertama diterima
+    new_list_event.clear() 
 
-        # Ambil daftar domain
+    # TAHAP 2: LOOPING PENGECEKAN RUTIN
+    while True: 
+        
         with domain_lock:
             domains_to_check = latest_domains.copy()
-
+            
         if not domains_to_check:
-            # Kasus seharusnya jarang terjadi karena event.set() dipicu bersama /list domain
-            send_telegram_message("🚫 Daftar domain saat ini kosong. Kirim /list domain lagi untuk memulai.")
-            continue # Kembali ke awal loop untuk menunggu event lagi
-
-        # --- Bagian Pengecekan ---
-        send_telegram_message(f"▶️ Memulai pengecekan {len(domains_to_check)} domain...")
+            # Jika daftar kosong setelah pengecekan pertama, kembali menunggu event
+            send_telegram_message("🚫 Daftar domain saat ini kosong. Menghentikan siklus. Kirim /list domain lagi.")
+            new_list_event.wait() 
+            new_list_event.clear()
+            continue 
+            
         results = cek_via_web_scrape(domains_to_check)
-
+        
         if results:
             total = len(results)
             aman = len([r for r in results if "✅ Not Blocked" in r])
@@ -251,9 +247,9 @@ def periodic_check_thread():
                     for _ in range(3):
                         send_telegram_message(f"📌 : {domain_result}")
                         time.sleep(1)
-        # --- Akhir Bagian Pengecekan ---
 
-        time.sleep(400)
+        time.sleep(10)
+        # Setelah tidur, loop while True akan mengulang dan mengecek daftar yang sama.
 
 # ==============================
 # THREAD 3: CEK MANUAL (/cek domain)
@@ -267,7 +263,7 @@ def manual_check_thread(domain):
                 send_telegram_message(f"📌 : {hasil}")
                 time.sleep(1)
         elif "✅ Not Blocked" in hasil:
-            send_telegram_message(f"✅ Tidak terblokir: {domain}.")
+            send_telegram_message(f"✅ {domain} : Tidak terblokir")
         else:
             send_telegram_message(f"📌 : {hasil}")
 
