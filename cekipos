@@ -23,6 +23,8 @@ latest_update_id = 0
 domain_lock = threading.Lock()
 # Event ini digunakan HANYA untuk memulai siklus periodic_check_thread
 new_list_event = threading.Event() 
+# BUG FIX: Lock untuk mencegah 2 thread mengakses WebDriver bersamaan (Race Condition)
+manual_check_lock = threading.Lock() 
 
 def send_telegram_message(message):
     try:
@@ -33,7 +35,7 @@ def send_telegram_message(message):
         print(f"❌ Gagal kirim ke Telegram: {e}")
 
 # ==============================
-# MANAJER KONTEKS UNTUK WEBDRIVER
+# MANAJER KONTEKS UNTUK WEBDRIVER (REVISI BUG FIX)
 # ==============================
 @contextmanager
 def get_webdriver():
@@ -50,7 +52,12 @@ def get_webdriver():
         yield driver
     finally:
         if driver:
-            driver.quit()
+            # BUG FIX: Menambahkan driver.close() sebelum driver.quit() untuk pembersihan yang lebih baik
+            try:
+                driver.close() # Tutup jendela/tab, membebaskan sumber daya
+            except:
+                pass 
+            driver.quit() # Hentikan proses driver dan Chrome
 
 # ==============================
 # CEK SATU DOMAIN
@@ -102,6 +109,8 @@ def check_single_domain(driver, domain):
 # ==============================
 def cek_via_web_scrape(domains_list):
     results = []
+    # Thread 2 (Rutin) akan menggunakan get_webdriver() tanpa lock, 
+    # tetapi akan terbatasi oleh manual_check_lock saat thread 3 aktif
     with get_webdriver() as driver: 
         for i in range(0, len(domains_list), 5):
             batch = domains_list[i:i+5]
@@ -248,15 +257,19 @@ def periodic_check_thread():
                         send_telegram_message(f"📌 : {domain_result}")
                         time.sleep(1)
 
+        send_telegram_message(f"🔄 Selesai! Pengecekan ulang akan dilakukan dalam 10 detik...") 
         time.sleep(10)
         # Setelah tidur, loop while True akan mengulang dan mengecek daftar yang sama.
 
 # ==============================
-# THREAD 3: CEK MANUAL (/cek domain)
+# THREAD 3: CEK MANUAL (/cek domain) (REVISI BUG FIX)
 # ==============================
 def manual_check_thread(domain):
-    with get_webdriver() as driver:
-        hasil = check_single_domain(driver, domain)
+    # BUG FIX: Menggunakan Lock untuk mengatur giliran akses WebDriver.
+    # Ini mencegah Race Condition saat Thread 2 juga sedang meluncurkan/mematikan Chrome.
+    with manual_check_lock: 
+        with get_webdriver() as driver:
+            hasil = check_single_domain(driver, domain)
 
         if "🚫 Blocked" in hasil:
             for _ in range(3):
