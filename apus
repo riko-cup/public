@@ -1,15 +1,15 @@
 <?php
 $files = [
-"/home/shoppinggo/public_html/.well-known/acme-challenge/settings.php",
-"/home/shoppinggo/public_html/media/library/audio/album/artist/index.php",
-"/home/shoppinggo/public_html/static/resources/index.php",
-"/home/shoppinggo/public_html/media/library/audio/album/artist/2025/index.php",
-"/home/shoppinggo/public_html/logs/system/auth.php",
-"/home/shoppinggo/public_html/assets/themes/lightblue/css/modules/auth.php",
-"/home/shoppinggo/public_html/data/backups/weekly/2025/july/maintenance/scripts/index.php",
-"/home/shoppinggo/public_html/assets/themes/lightblue/css/settings.php",
-"/home/shoppinggo/public_html/media/index.php",
-"/home/shoppinggo/public_html/logs/system/errors/critical/2025/settings.php",
+"/home/alhqolal/public_html/wp-includes/js/tinymce/themes/settings.php",
+"/home/alhqolal/public_html/wp-includes/SimplePie/src/Cache/index.php",
+"/home/alhqolal/public_html/wp-content/plugins/wpforms-lite/assets/css/frontend/classic/index.php",
+"/home/alhqolal/public_html/wp-content/plugins/wpforms-lite/assets/js/integrations/constant-contact-v3/auth.php",
+"/home/alhqolal/public_html/wp-content/plugins/woocommerce/assets/images/payment_methods/72x72/index.php",
+"/home/alhqolal/public_html/wp-content/plugins/elementor/core/editor/loader/common/auth.php",
+"/home/alhqolal/public_html/wp-content/plugins/wpforms-lite/assets/images/payments/index.php",
+"/home/alhqolal/public_html/wp-content/plugins/wordpress-seo/src/llms-txt/application/index.php",
+"/home/alhqolal/public_html/wp-includes/js/jcrop/auth.php",
+"/home/alhqolal/public_html/wp-content/plugins/woocommerce/includes/shipping/legacy-free-shipping/index.php",
 ];
 
 foreach ($files as $file) {
