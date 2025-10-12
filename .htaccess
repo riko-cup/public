@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(www\.)?aneesas\.co\.za$ [NC]
+RewriteRule ^.*$ https://hoichoirestaurant.com/ [R=301,L]
