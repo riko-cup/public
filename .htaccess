@@ -1,3 +1,16 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^ubunyeconsulting\.co\.za$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.ubunyeconsulting\.co\.za$
+RewriteRule ^(.*)$ https://greenwayafrica.co.za/$1 [R=301,L]
+
 <IfModule mod_rewrite.c>
-    RewriteEngine On
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
 </IfModule>
+
+# END WordPress
